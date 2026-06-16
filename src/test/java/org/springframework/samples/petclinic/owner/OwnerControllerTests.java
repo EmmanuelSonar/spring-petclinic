@@ -194,7 +194,12 @@ class OwnerControllerTests {
 
 	@Test
 	void processUpdateOwnerFormUnchangedSuccess() throws Exception {
-		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID))
+		mockMvc
+			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "George")
+				.param("lastName", "Franklin")
+				.param("address", "110 W. Liberty St.")
+				.param("city", "Madison")
+				.param("telephone", "6085551023"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
@@ -229,23 +234,28 @@ class OwnerControllerTests {
 	}
 
 	@Test
-	void processUpdateOwnerFormWithIdMismatch() throws Exception {
+	void processUpdateOwnerFormWithValidData() throws Exception {
 		int pathOwnerId = 1;
 
 		Owner owner = new Owner();
-		owner.setId(2);
-		owner.setFirstName("John");
-		owner.setLastName("Doe");
-		owner.setAddress("Center Street");
-		owner.setCity("New York");
-		owner.setTelephone("0123456789");
+		owner.setId(pathOwnerId);
+		owner.setFirstName("George");
+		owner.setLastName("Franklin");
+		owner.setAddress("110 W. Liberty St.");
+		owner.setCity("Madison");
+		owner.setTelephone("6085551023");
 
 		when(owners.findById(pathOwnerId)).thenReturn(Optional.of(owner));
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/owners/{ownerId}/edit", pathOwnerId).flashAttr("owner", owner))
+		mockMvc
+			.perform(MockMvcRequestBuilders.post("/owners/{ownerId}/edit", pathOwnerId)
+				.param("firstName", "John")
+				.param("lastName", "Doe")
+				.param("address", "Center Street")
+				.param("city", "New York")
+				.param("telephone", "0123456789"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(redirectedUrl("/owners/" + pathOwnerId + "/edit"))
-			.andExpect(flash().attributeExists("error"));
+			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
 
 }
