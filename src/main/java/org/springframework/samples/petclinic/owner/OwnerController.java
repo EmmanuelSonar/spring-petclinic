@@ -50,10 +50,15 @@ class OwnerController {
 
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
 
+	private static final String MESSAGE_ATTRIBUTE = "message";
+
 	private final OwnerRepository owners;
 
-	public OwnerController(OwnerRepository owners) {
+	private final VisitRepository visits;
+
+	public OwnerController(OwnerRepository owners, VisitRepository visits) {
 		this.owners = owners;
+		this.visits = visits;
 	}
 
 	@InitBinder
@@ -82,7 +87,7 @@ class OwnerController {
 		}
 
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "New Owner Created");
+		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "New Owner Created");
 		return "redirect:/owners/" + owner.getId();
 	}
 
@@ -154,7 +159,24 @@ class OwnerController {
 
 		owner.setId(ownerId);
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Owner Values Updated");
+		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "Owner Values Updated");
+		return "redirect:/owners/{ownerId}";
+	}
+
+	/**
+	 * Cancels a previously booked visit. The visit is soft-cancelled (kept in the
+	 * database and flagged) so it is excluded from reminders but remains visible in the
+	 * owner's history.
+	 * @param visitId the ID of the visit to cancel
+	 * @return a redirect to the owner detail page
+	 */
+	@PostMapping("/owners/{ownerId}/visits/{visitId}/cancel")
+	public String cancelVisit(@PathVariable("visitId") int visitId, RedirectAttributes redirectAttributes) {
+		Visit visit = this.visits.findById(visitId)
+			.orElseThrow(() -> new IllegalArgumentException("Visit not found with id: " + visitId));
+		visit.setCancelled(true);
+		this.visits.save(visit);
+		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "The visit has been cancelled");
 		return "redirect:/owners/{ownerId}";
 	}
 
