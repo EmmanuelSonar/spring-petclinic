@@ -177,8 +177,7 @@ class OwnerController {
 			.filter(v -> this.owners.findById(ownerId)
 				.map(o -> o.getPets().stream().anyMatch(p -> p.getVisits().contains(v)))
 				.orElse(false))
-			.orElseThrow(() -> new IllegalArgumentException(
-					"Visit " + visitId + " not found for owner " + ownerId));
+			.orElseThrow(() -> new IllegalArgumentException("Visit " + visitId + " not found for owner " + ownerId));
 		visit.setCancelled(true);
 		this.visits.save(visit);
 		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "The visit has been cancelled");
