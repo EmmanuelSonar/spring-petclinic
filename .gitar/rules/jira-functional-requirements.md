@@ -1,17 +1,17 @@
 ---
-title: "Jira Business Requirements Verification"
+title: "Jira Functional Requirements Verification"
 description: "Verify a PR's implementation fulfils the requirements of its linked Jira ticket and report the result in the summary comment"
-slug: "jira_business_requirements_verification"
+slug: "jira_functional_requirements_verification"
 when: "PR/MR references a Jira issue key in its title or description (evaluate on open and on every code update)"
-actions: "Fetch the linked Jira issue, compare the diff against its described requirements and acceptance criteria, and add a 'Business Requirements' section to the Gitar summary comment stating whether requirements are fully met, partially met (gaps), or misinterpreted"
+actions: "Fetch the linked Jira issue, compare the diff against its described requirements and acceptance criteria, and add a 'Functional Requirements' section to the Gitar summary comment stating whether requirements are fully met, partially met (gaps), or misinterpreted"
 integrations: "jira"
 ---
 
-# Jira Business Requirements Verification
+# Jira Functional Requirements Verification
 
 When a pull request is tied to a Jira ticket, read what the ticket actually asks
 for and judge whether the code in the PR delivers it. Surface the verdict as a
-**Business Requirements** section inside Gitar's summary comment so a reviewer can
+**Functional Requirements** section inside Gitar's summary comment so a reviewer can
 tell, at a glance, whether the implementation matches the intent — and where it
 diverges.
 
@@ -29,7 +29,7 @@ Skip if:
   `[hotfix]` are **not** issue references — only match letters-hyphen-digits.
 - The PR is a pure chore with no behavioural intent (e.g. dependency bump,
   formatting-only, generated-file sync) AND the ticket is administrative. In that
-  case note "No business requirements to verify" rather than forcing a verdict.
+  case note "No functional requirements to verify" rather than forcing a verdict.
 - The referenced issue cannot be fetched (deleted, no access). Note that the ticket
   was referenced but could not be read, instead of guessing.
 
@@ -43,7 +43,7 @@ Skip if:
   criteria**, sub-tasks/checklist items, labels, and issue type
   (Story / Bug / Task / Spike).
 
-### 2. Extract the business requirements
+### 2. Extract the functional requirements
 
 From the ticket, distil a concrete, testable list of what must be true when the
 work is done. Pull from, in priority order:
@@ -78,13 +78,13 @@ the ticket asks for (note it, do not fail the PR for it).
 | 🟡 **Gaps found** | At least one **Partial** or **Missing**, none **Misinterpreted** |
 | 🔴 **Misinterpretation** | One or more requirements are **Misinterpreted** or contradict the ticket |
 
-### 5. Add the "Business Requirements" section to the summary comment
+### 5. Add the "Functional Requirements" section at the bottom of the PR description
 
 Append the following section to Gitar's PR summary comment (update it in place on
 re-evaluation rather than duplicating):
 
 ```markdown
-## Business Requirements
+## Functional Requirements
 
 **Ticket:** [PET-42](https://your-domain.atlassian.net/browse/PET-42) — Notify owner when a visit is scheduled
 **Status:** 🟡 Gaps found
@@ -120,5 +120,5 @@ Rules for the section:
   merge instead of surfacing in QA or production.
 - **Flags misinterpretation** — distinguishes "incomplete" from "built the wrong
   thing," which need different fixes.
-- **Preserves traceability** — ties the merged code back to the business reason it
+- **Preserves traceability** — ties the merged code back to the functional reason it
   was written.
