@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Cube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 100%);
+            border: 3px solid #333;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #ff6b6b;
+            left: 30px;
+            top: 250px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .obstacle {
+            position: absolute;
+            width: 80px;
+            height: 150px;
+            background: #2ecc71;
+            border-radius: 4px;
+        }
+
+        .obstacle.top {
+            background: #e74c3c;
+        }
+
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            display: none;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        #gameOver h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        #gameOver p {
+            font-size: 24px;
+            margin: 15px 0;
+        }
+
+        #gameOver button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #gameOver button:hover {
+            background: #764ba2;
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            z-index: 10;
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="score">Score: 0</div>
+        <div id="player"></div>
+        <div id="gameOver">
+            <h1>Game Over!</h1>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+        <div id="instructions">Click or Press SPACE to Flap</div>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('gameContainer');
+        const player = document.getElementById('player');
+        const scoreDisplay = document.getElementById('score');
+        const gameOverScreen = document.getElementById('gameOver');
+        const finalScoreDisplay = document.getElementById('finalScore');
+
+        const GRAVITY = 0.6;
+        const FLAP_STRENGTH = -12;
+        const GAME_WIDTH = 400;
+        const GAME_HEIGHT = 600;
+        const PLAYER_SIZE = 40;
+        const OBSTACLE_WIDTH = 80;
+        const OBSTACLE_GAP = 120;
+        const OBSTACLE_SPACING = 200;
+
+        let playerY = 250;
+        let playerVelocity = 0;
+        let score = 0;
+        let gameRunning = true;
+        let obstacleX = GAME_WIDTH;
+        let lastObstacleTime = 0;
+
+        function flap() {
+            playerVelocity = FLAP_STRENGTH;
+        }
+
+        document.addEventListener('click', flap);
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flap();
+            }
+        });
+
+        function updateGame() {
+            if (!gameRunning) return;
+
+            // Update player position
+            playerVelocity += GRAVITY;
+            playerY += playerVelocity;
+
+            // Boundary check
+            if (playerY < 0 || playerY + PLAYER_SIZE > GAME_HEIGHT) {
+                endGame();
+                return;
+            }
+
+            player.style.top = playerY + 'px';
+
+            // Move obstacles
+            const obstacles = document.querySelectorAll('.obstacle');
+            obstacles.forEach((obs) => {
+                const x = parseFloat(obs.style.left);
+                obs.style.left = (x - 5) + 'px';
+
+                // Check collision
+                if (checkCollision(obs)) {
+                    endGame();
+                }
+
+                // Remove off-screen obstacles and increase score
+                if (x < -OBSTACLE_WIDTH) {
+                    obs.remove();
+                    if (!obs.classList.contains('scored')) {
+                        score++;
+                        scoreDisplay.textContent = 'Score: ' + score;
+                        obs.classList.add('scored');
+                    }
+                }
+            });
+
+            // Generate new obstacles
+            if (obstacleX < GAME_WIDTH - OBSTACLE_SPACING) {
+                createObstaclePair();
+                obstacleX += OBSTACLE_SPACING;
+            }
+        }
+
+        function createObstaclePair() {
+            const gapStart = Math.random() * (GAME_HEIGHT - OBSTACLE_GAP - 100) + 50;
+
+            // Top obstacle
+            const topObs = document.createElement('div');
+            topObs.className = 'obstacle top';
+            topObs.style.height = gapStart + 'px';
+            topObs.style.left = GAME_WIDTH + 'px';
+            topObs.style.top = '0px';
+            gameContainer.appendChild(topObs);
+
+            // Bottom obstacle
+            const bottomObs = document.createElement('div');
+            bottomObs.className = 'obstacle';
+            bottomObs.style.height = (GAME_HEIGHT - gapStart - OBSTACLE_GAP) + 'px';
+            bottomObs.style.left = GAME_WIDTH + 'px';
+            bottomObs.style.top = (gapStart + OBSTACLE_GAP) + 'px';
+            gameContainer.appendChild(bottomObs);
+        }
+
+        function checkCollision(obstacle) {
+            const obsRect = obstacle.getBoundingClientRect();
+            const containerRect = gameContainer.getBoundingClientRect();
+            const playerRect = player.getBoundingClientRect();
+
+            const obsX = obsRect.left - containerRect.left;
+            const obsY = obsRect.top - containerRect.top;
+            const obsWidth = obsRect.width;
+            const obsHeight = obsRect.height;
+
+            return !(playerRect.right - containerRect.left < obsX ||
+                     playerRect.left - containerRect.left > obsX + obsWidth ||
+                     playerRect.bottom - containerRect.top < obsY ||
+                     playerRect.top - containerRect.top > obsY + obsHeight);
+        }
+
+        function endGame() {
+            gameRunning = false;
+            finalScoreDisplay.textContent = score;
+            gameOverScreen.style.display = 'block';
+        }
+
+        // Game loop
+        setInterval(updateGame, 1000 / 60);
+
+        // Initial obstacle
+        createObstaclePair();
+        obstacleX = GAME_WIDTH;
+    </script>
+</body>
+</html>
