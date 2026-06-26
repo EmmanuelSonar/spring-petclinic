@@ -78,7 +78,7 @@ the ticket asks for (note it, do not fail the PR for it).
 | 🟡 **Gaps found** | At least one **Partial** or **Missing**, none **Misinterpreted** |
 | 🔴 **Misinterpretation** | One or more requirements are **Misinterpreted** or contradict the ticket |
 
-### 5. Add the "Business Requirements" section to the summary comment
+### 5. Add the "Business Requirements" section at the bottom of the PR description
 
 Append the following section to Gitar's PR summary comment (update it in place on
 re-evaluation rather than duplicating):
