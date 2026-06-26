@@ -171,9 +171,14 @@ class OwnerController {
 	 * @return a redirect to the owner detail page
 	 */
 	@PostMapping("/owners/{ownerId}/visits/{visitId}/cancel")
-	public String cancelVisit(@PathVariable("visitId") int visitId, RedirectAttributes redirectAttributes) {
+	public String cancelVisit(@PathVariable("ownerId") int ownerId, @PathVariable("visitId") int visitId,
+			RedirectAttributes redirectAttributes) {
 		Visit visit = this.visits.findById(visitId)
-			.orElseThrow(() -> new IllegalArgumentException("Visit not found with id: " + visitId));
+			.filter(v -> this.owners.findById(ownerId)
+				.map(o -> o.getPets().stream().anyMatch(p -> p.getVisits().contains(v)))
+				.orElse(false))
+			.orElseThrow(() -> new IllegalArgumentException(
+					"Visit " + visitId + " not found for owner " + ownerId));
 		visit.setCancelled(true);
 		this.visits.save(visit);
 		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "The visit has been cancelled");
