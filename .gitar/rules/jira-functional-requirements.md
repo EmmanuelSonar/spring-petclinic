@@ -1,9 +1,9 @@
 ---
 title: "Jira Functional Requirements Verification"
-description: "Verify a PR's implementation fulfils the requirements of its linked Jira ticket and report the result in the summary comment"
+description: "Verify a PR's implementation fulfils the requirements of its linked Jira ticket and report the result in the PR description"
 slug: "jira_functional_requirements_verification"
 when: "PR/MR references a Jira issue key in its title or description (evaluate on open and on every code update)"
-actions: "Fetch the linked Jira issue, compare the diff against its described requirements and acceptance criteria, and add a 'Functional Requirements' section to the Gitar summary comment stating whether requirements are fully met, partially met (gaps), or misinterpreted"
+actions: "Fetch the linked Jira issue, compare the diff against its described requirements and acceptance criteria, and add a 'Functional Requirements' section to the PR description stating whether requirements are fully met, partially met (gaps), or misinterpreted"
 integrations: "jira"
 ---
 
@@ -11,7 +11,7 @@ integrations: "jira"
 
 When a pull request is tied to a Jira ticket, read what the ticket actually asks
 for and judge whether the code in the PR delivers it. Surface the verdict as a
-**Functional Requirements** section in the  PR summary so a reviewer can
+**Functional Requirements** section in the  PR description so a reviewer can
 tell, at a glance, whether the implementation matches the intent — and where it
 diverges.
 
@@ -80,7 +80,7 @@ the ticket asks for (note it, do not fail the PR for it).
 
 ### 5. Add the "Functional Requirements" section at the bottom of the PR description
 
-Append the following section to the PR summary, separated by a line from the rest of the PR (update it in place on
+Append the following section to the PR description, separated by a line from the rest of the PR description (update it in place on
 re-evaluation rather than duplicating):
 
 ```markdown
