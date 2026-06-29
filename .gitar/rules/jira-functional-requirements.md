@@ -11,7 +11,7 @@ integrations: "jira"
 
 When a pull request is tied to a Jira ticket, read what the ticket actually asks
 for and judge whether the code in the PR delivers it. Surface the verdict as a
-**Functional Requirements** section inside Gitar's summary comment so a reviewer can
+**Functional Requirements** section in the  PR summary so a reviewer can
 tell, at a glance, whether the implementation matches the intent — and where it
 diverges.
 
@@ -80,7 +80,7 @@ the ticket asks for (note it, do not fail the PR for it).
 
 ### 5. Add the "Functional Requirements" section at the bottom of the PR description
 
-Append the following section to Gitar's PR summary comment (update it in place on
+Append the following section to the PR summary, separated by a line from the rest of the PR (update it in place on
 re-evaluation rather than duplicating):
 
 ```markdown
