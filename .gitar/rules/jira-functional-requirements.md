@@ -1,9 +1,9 @@
 ---
 title: "Jira Functional Requirements Verification"
-description: "Verify a PR's implementation fulfils the requirements of its linked Jira ticket and report the result in the PR description"
+description: "Verify a PR's implementation fulfils the requirements of its linked Jira ticket and report the result in a dedicated comment"
 slug: "jira_functional_requirements_verification"
 when: "PR/MR references a Jira issue key in its title or description (evaluate on open and on every code update)"
-actions: "Fetch the linked Jira issue, compare the diff against its described requirements and acceptance criteria, and add a 'Functional Requirements' section to the PR description stating whether requirements are fully met, partially met (gaps), or misinterpreted"
+actions: "Fetch the linked Jira issue, compare the diff against its described requirements and acceptance criteria, and add a 'Functional Requirements' comment  whether requirements are fully met, partially met (gaps), or misinterpreted"
 integrations: "jira"
 ---
 
@@ -11,7 +11,7 @@ integrations: "jira"
 
 When a pull request is tied to a Jira ticket, read what the ticket actually asks
 for and judge whether the code in the PR delivers it. Surface the verdict as a
-**Functional Requirements** section in the  PR description so a reviewer can
+**Functional Requirements** comment so a reviewer can
 tell, at a glance, whether the implementation matches the intent — and where it
 diverges.
 
@@ -78,9 +78,9 @@ the ticket asks for (note it, do not fail the PR for it).
 | 🟡 **Gaps found** | At least one **Partial** or **Missing**, none **Misinterpreted** |
 | 🔴 **Misinterpretation** | One or more requirements are **Misinterpreted** or contradict the ticket |
 
-### 5. Add the "Functional Requirements" section at the bottom of the PR description
+### 5. Add the "Functional Requirements" comment
 
-Append the following section to the PR description, separated by a line from the rest of the PR description (update it in place on
+Create a new comment to report the result (update it in place on
 re-evaluation rather than duplicating):
 
 ```markdown
@@ -103,7 +103,7 @@ re-evaluation rather than duplicating):
 - Adds a `/notifications/preferences` endpoint not mentioned in PET-42 (verify intended).
 ```
 
-Rules for the section:
+Rules for the comment:
 - Always include the linked ticket(s) and the overall **Status** line first.
 - One table row per requirement, each with a status icon and concrete evidence
   (reference real files/symbols from the diff — `path:symbol`).
