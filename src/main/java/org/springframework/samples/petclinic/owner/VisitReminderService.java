@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class VisitReminderService {
 	@Scheduled(cron = "${petclinic.reminder.cron:0 0 8 * * *}")
 	@Transactional
 	public void sendVisitReminders() {
-		LocalDate targetDate = LocalDate.now().plusDays(REMINDER_LEAD_DAYS);
+		LocalDate targetDate = LocalDate.now(ZoneOffset.UTC).plusDays(REMINDER_LEAD_DAYS);
 		List<VisitReminder> reminders = this.owners.findVisitRemindersForDate(targetDate);
 		if (reminders.isEmpty()) {
 			return;
