@@ -15,11 +15,15 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Repository class for <code>Owner</code> domain objects. All method names are compliant
@@ -58,5 +62,20 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 	 * input for id)
 	 */
 	Optional<Owner> findById(Integer id);
+
+	/**
+	 * Retrieve the reminders that should be sent for visits taking place on the given
+	 * date. Only non-cancelled visits that have not already been reminded about, and
+	 * whose owner has an email address, are returned.
+	 * @param date the visit date to look for
+	 * @return a list of {@link VisitReminder}s (empty if none match)
+	 */
+	@Query("""
+			SELECT new org.springframework.samples.petclinic.owner.VisitReminder(
+			         o.firstName, o.lastName, o.email, p.name, v.id, v.date, v.description)
+			FROM Owner o JOIN o.pets p JOIN p.visits v
+			WHERE v.date = :date AND v.cancelled = false AND v.reminderSent = false AND o.email IS NOT NULL
+			""")
+	List<VisitReminder> findVisitRemindersForDate(@Param("date") LocalDate date);
 
 }

@@ -31,6 +31,10 @@
       <th th:text="#{telephone}">Telephone</th>
       <td th:text="*{telephone}"></td>
     </tr>
+    <tr th:if="*{email}">
+      <th th:text="#{email}">Email</th>
+      <td th:text="*{email}"></td>
+    </tr>
   </table>
 
   <a th:href="@{__${owner.id}__/edit}" class="btn btn-primary" th:text="#{editOwner}">Edit
@@ -62,11 +66,22 @@
             <tr>
               <th th:text="#{visitDate}">Visit Date</th>
               <th th:text="#{description}">Description</th>
+              <th></th>
             </tr>
           </thead>
-          <tr th:each="visit : ${pet.visits}">
-            <td th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}"></td>
-            <td th:text="${visit?.description}"></td>
+          <tr th:each="visit : ${pet.visits}" th:classappend="${visit.cancelled} ? 'text-muted' : ''">
+            <td th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}"
+              th:style="${visit.cancelled} ? 'text-decoration: line-through' : ''"></td>
+            <td th:text="${visit?.description}"
+              th:style="${visit.cancelled} ? 'text-decoration: line-through' : ''"></td>
+            <td>
+              <span th:if="${visit.cancelled}" th:text="#{visitCancelled}">Cancelled</span>
+              <form th:unless="${visit.cancelled}"
+                th:action="@{/owners/{ownerId}/visits/{visitId}/cancel(ownerId=${owner.id},visitId=${visit.id})}"
+                method="post">
+                <button type="submit" class="btn btn-sm btn-danger" th:text="#{cancelVisit}">Cancel Visit</button>
+              </form>
+            </td>
           </tr>
           <tr>
             <td><a th:href="@{__${owner.id}__/pets/__${pet.id}__/edit}" th:text="#{editPet}">Edit Pet</a></td>

@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS owners (
   address VARCHAR(255),
   city VARCHAR(80),
   telephone VARCHAR(20),
+  email VARCHAR(255),
   INDEX(last_name)
 ) engine=InnoDB;
 
@@ -51,5 +52,7 @@ CREATE TABLE IF NOT EXISTS visits (
   pet_id INT(4) UNSIGNED,
   visit_date DATE,
   description VARCHAR(255),
+  cancelled BOOLEAN DEFAULT FALSE,
+  reminder_sent BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (pet_id) REFERENCES pets(id)
 ) engine=InnoDB;

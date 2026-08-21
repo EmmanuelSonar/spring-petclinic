@@ -42,6 +42,12 @@ public class Visit extends BaseEntity {
 	@NotBlank
 	private String description;
 
+	@Column(name = "cancelled")
+	private boolean cancelled;
+
+	@Column(name = "reminder_sent")
+	private boolean reminderSent;
+
 	/**
 	 * Creates a new instance of Visit for tomorrow
 	 */
@@ -63,6 +69,22 @@ public class Visit extends BaseEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isCancelled() {
+		return this.cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public boolean isReminderSent() {
+		return this.reminderSent;
+	}
+
+	public void setReminderSent(boolean reminderSent) {
+		this.reminderSent = reminderSent;
 	}
 
 }
